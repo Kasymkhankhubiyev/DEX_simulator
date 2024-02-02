@@ -1,14 +1,13 @@
-# from tkinter import Tk, PhotoImage
-from customtkinter import CTk # , PhotoImage
+from tkinter import Tk, PhotoImage
 from tkinter import messagebox
 
-def create_window() -> CTk:
+def create_window() -> Tk:
     """
     Создаем главное окно
     :return: window
     """
 
-    window = CTk()
+    window = Tk()
     window.title("DEX Simulator")
     w = window.winfo_screenwidth()
     h = window.winfo_screenheight()

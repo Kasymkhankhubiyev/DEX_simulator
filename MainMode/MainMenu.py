@@ -25,5 +25,5 @@ class MainMenu:
         clear_window(self.window, 'pack')
         self.window.update()
 
-        simulation_settings_window = StarterSetting(self.window)
+        simulation_settings_window = StarterSetting(self, self.window)
         simulation_settings_window.draw_main()

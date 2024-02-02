@@ -1,30 +1,126 @@
 import tkinter as tk
 
 from tkinter import ttk
+from tkinter import messagebox
 
 from helper import clear_window
+from exceptions import SimulationParamsError
 
 Labels_font = ('Arial', 30)
 
 class StarterSetting:
-    def __init__(self, window: tk.Tk) -> None:
-
+    """
+    
+    """
+    def __init__(self, main_menu,  window: tk.Tk) -> None:
+        """
+        
+        """
         self.window = window
+        self.main_menu = main_menu
+
+        self.lp_type = None
+        self.lp_assetX, self.lp_assetX_volume = None, None
+        self.lp_assetY, self.lp_assetY_volume = None, None
+        self.amm_type, self.noisy_lt_num = None, None
+
+        self.back_btn, self.start_btn = None, None
 
     def draw_main(self):
+        """
+        
+        """
         main_canvas = tk.Canvas(self.window)
         main_canvas.pack(anchor=tk.CENTER, expand=True)
 
         tk.Label(main_canvas, text='Liqudity Pool (LP) type:', font=Labels_font).grid(row=0, column=0, padx=20, pady=7)
-        self.lp_type = ttk.Combobox(main_canvas, values=['Constant', 'Stochastic'], font=Labels_font)
+        self.lp_type = ttk.Combobox(main_canvas, values=['Constant', 'Stochastic'], font=Labels_font,
+                                    width=10)
         self.lp_type.grid(row=0, column=1, padx=10, pady=7)
 
         tk.Label(main_canvas, text='LP asset X:', font=Labels_font).grid(row=1, column=0, padx=10, pady=7)
-        self.lp_assetX = ttk.Combobox(main_canvas, values=['BTC', 'ETH'], font=Labels_font)
+        self.lp_assetX = ttk.Combobox(main_canvas, values=['BTC', 'ETH'], font=Labels_font,
+                                      width=10)
         self.lp_assetX.grid(row=1, column=1, padx=10, pady=7)
 
-        
+        tk.Label(main_canvas, text='Asset Amount:', font=Labels_font).grid(row=2, column=0, padx=10, pady=7)
+        self.lp_assetX_volume = ttk.Spinbox(main_canvas, font=Labels_font, width=10, 
+                                            from_=0.01, to=1000, increment=0.01)
+        self.lp_assetX_volume.grid(row=2, column=1, padx=10, pady=7)
 
-    def _clear_window(self):
+        tk.Label(main_canvas, text='LP asset Y:', font=Labels_font).grid(row=3, column=0, padx=10, pady=7)
+        self.lp_assetY = ttk.Combobox(main_canvas, values=['BTC', 'ETH'], font=Labels_font,
+                                      width=10)
+        self.lp_assetY.grid(row=3, column=1, padx=10, pady=7)
+
+        tk.Label(main_canvas, text='Asset Amount:', font=Labels_font).grid(row=4, column=0, padx=10, pady=7)
+        self.lp_assetY_volume = ttk.Spinbox(main_canvas, font=Labels_font, width=10, 
+                                            from_=0.01, to=1000, increment=0.01)
+        self.lp_assetY_volume.grid(row=4, column=1, padx=10, pady=7)
+
+        tk.Label(main_canvas, text='AMM type:', font=Labels_font).grid(row=5, column=0, padx=10, pady=7)
+        self.amm_type = ttk.Combobox(main_canvas, values=['Uniswap V3', 'SUMM', 'Weighted SUMM'],
+                                     font=Labels_font, width=10)
+        self.amm_type.grid(row=5, column=1, padx=10, pady=7)
+
+        tk.Label(main_canvas, text="Noisy LT amount:", font=Labels_font).grid(row=6, column=0,
+                                                                              padx=10, pady=7)
+        self.noisy_lt_num = ttk.Spinbox(main_canvas, font=Labels_font, width=10,
+                                        from_=1, to=50, increment=1)
+        self.noisy_lt_num.grid(row=6, column=1, padx=10, pady=7)
+
+        start_exit_canvas = tk.Canvas(main_canvas, width=30)
+        start_exit_canvas.grid(row=7, column=0, columnspan=2, pady=20, sticky='we')
+
+        self.back_btn = tk.Button(start_exit_canvas, text='Back', background='red', font=Labels_font,
+                                  command=self._back_to_main_menu)
+        self.back_btn.grid(row=0, column=0, pady=3, padx=20, sticky='e')
+
+        tk.Label(start_exit_canvas, width=15, font=Labels_font).grid(row=0, column=1)
+
+        self.start_btn = tk.Button(start_exit_canvas, text='Start', background='green', font=Labels_font)
+        self.start_btn.grid(row=0, column=2, pady=3,padx=10, sticky='e')
+
+
+    def _back_to_main_menu(self) -> None:
         clear_window(self.window, 'pack')
+        self.main_menu.draw_main()
+
+
+    def _run_modulation(self) ->None:
+        try:
+            data = {}
+            if self.lp_type.get() is not None and self.lp_type.get().strip() != '':
+                data['lp_type'] = self.lp_type.get()
+            else:
+                raise SimulationParamsError('Liquidity Pool type is empty', '')
+            
+            # TODO: we need to check from available
+            if self.lp_assetX.get() is not None and self.lp_assetX.get().strip() != '':
+                data['lp_assetX'] = self.lp_assetX.get()
+            else:
+                raise SimulationParamsError('Asset is not available', self.lp_assetX.get())
+            
+            #TODO: we need to check if it is a number
+            if self.lp_assetX_volume.get() is not None and self.lp_assetX.get().strip() != '' and \
+                float(self.lp_assetX.get()) > 0.01:
+
+                data['lp_assetX_volume'] = float(self.lp_assetX_volume.get())
+            else:
+                raise SimulationParamsError(f'Asset {self.lp_assetX.get()} volume must be integer', 
+                                            self.lp_assetX_volume.get())
+            
+            # TODO: make extruct data from self.lp_assetY
+
+            # TODO: make extruct data from self.lp_assetY_volume
+
+            # TODO: make extruct data from self.amm_type
+
+            # TODO: make extruct data from self.noisy_lt_num
+            
+            
+            clear_window(self.window, 'pack')
+        except Exception as e:
+            messagebox.showerror(e.args)
+
 

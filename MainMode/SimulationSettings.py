@@ -8,6 +8,8 @@ from exceptions import SimulationParamsError
 
 Labels_font = ('Arial', 30)
 
+# TODO: we need to make json with available stocks, amms to check from 
+
 class StarterSetting:
     """
     
@@ -32,6 +34,8 @@ class StarterSetting:
         """
         main_canvas = tk.Canvas(self.window)
         main_canvas.pack(anchor=tk.CENTER, expand=True)
+
+        # TODO: pack into iterable function
 
         tk.Label(main_canvas, text='Liqudity Pool (LP) type:', font=Labels_font).grid(row=0, column=0, padx=20, pady=7)
         self.lp_type = ttk.Combobox(main_canvas, values=['Constant', 'Stochastic'], font=Labels_font,

@@ -33,7 +33,8 @@ class UniswapCanvas:
         self.canvas.get_tk_widget().pack(fill=BOTH, expand=True)
     
 
-    def draw(self, data: dict) -> None:
+    def draw(self, data_to_plot: dict) -> None:
+
         self.ax.cla()
         self.ax.set_xlabel(f'{self.data["assetX"]}')
         self.ax.set_ylabel(f'{self.data["assetY"]}')
@@ -43,18 +44,4 @@ class UniswapCanvas:
 
         self.ax.plot(x, y, label='Pool')
         
-        # self.ax.plot(data['x_s'], data['E_c_s'], c='red', label='Conduction Band')
-        # self.ax.plot(data['x_s'], data['E_f_s'], c='darkorange', label='Fermi Energy')
-        # self.ax.plot(data['x_s'][0:round(len(data['x_s']) / 2)],
-        #         data['E_as_s'][0:round(len(data['E_as_s']) / 2)], c='green', label='Acceptor Energy')
-        # self.ax.plot(data['x_s'], data['E_d_s'], c='blue', label='Donor Energy')
-        # self.ax.plot(data['x_s'], data['E_v_s'], c='purple', label='Valence Band')
-
-        # if(data['E_v_s'][0]<0):
-        #     self.ax.axhline(-1*data['phi'], c='k', linestyle='dashed')
-        # else:
-        #     self.ax.axhline(data['phi'], c='k', linestyle='dashed')
-        # self.ax.axvline(data['W'], c='k', linestyle='dashed')
-
-        # self.ax.legend(fontsize=10, loc='right')
         self.canvas.draw()

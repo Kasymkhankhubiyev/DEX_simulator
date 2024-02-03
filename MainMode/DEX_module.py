@@ -2,6 +2,7 @@
 import tkinter as tk
 
 from .Graph import UniswapCanvas
+from .Deribit import get_coin_cost
 
 
 label_font = ('TimesNewRoman', 20)
@@ -47,37 +48,41 @@ class DEX:
                                                          padx=5, rowspan=2,
                                                          sticky='w')
         
-        tk.Label(upper_line, text=f'BTC amount -- {self.data["lp_assetX_volume"]}', 
+        tk.Label(upper_line, text=f'{self.data["lp_assetX"]} amount -- {self.data["lp_assetX_volume"]}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=0,column=2, 
                                                          padx=5, pady=3,
                                                          sticky='w')
-        tk.Label(upper_line, text=f'USDC amount -- {self.data["lp_assetY_volume"]}', 
+        tk.Label(upper_line, text=f'{self.data["lp_assetY"]} amount -- {self.data["lp_assetY_volume"]}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=1,column=2, 
                                                          padx=5, pady=3,
                                                          sticky='w')
         
         tk.Label(upper_line, 
-                 text=f'BTC pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]}', 
+                 text=f'{self.data["lp_assetX"]} pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]}', 
                  relief=tk.SUNKEN, font=label_font,
                  foreground='red').grid(row=0, column=3, 
                                                          padx=5, pady=3,
                                                          sticky='w')
-        tk.Label(upper_line, text='BTC stock price: x_s', 
+        tk.Label(upper_line, text=f'{self.data["lp_assetX"]} stock price: {get_coin_cost(self.data["lp_assetX"])}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=1, column=3, 
                                                          padx=5, pady=3,
                                                          sticky='w')
         
         tk.Label(upper_line, 
-                 text=f'USDC pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]}', 
+                 text=f'{self.data["lp_assetY"]} pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=0, column=4, 
                                                          padx=5, pady=3,
                                                          sticky='w')
-        tk.Label(upper_line, text='USDC stock price: y_n', 
+        tk.Label(upper_line, text=f'{self.data["lp_assetY"]} stock price: y_n', 
                  relief=tk.SUNKEN, font=label_font).grid(row=1, column=4, 
                                                          padx=5, pady=3,
                                                          sticky='w')
 
         amm_canvas = tk.Canvas(self.window)
         amm_canvas.grid(row=1, column=0)
-        amm_graph = UniswapCanvas(amm_canvas, 'BTC', 'USDT')
+        amm_data = {'assetX': self.data["lp_assetX"],
+                    'assetY': self.data["lp_assetY"],
+                    'assetX_volume': self.data["lp_assetX_volume"],
+                    'assetY_volume': self.data["lp_assetY_volume"]}
+        amm_graph = UniswapCanvas(amm_canvas, amm_data)
         amm_graph.draw({})

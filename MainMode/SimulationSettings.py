@@ -59,7 +59,7 @@ class StarterSetting:
         tk.Label(main_canvas, text='Asset Amount:', font=Labels_font).grid(row=2, column=0, padx=10, pady=7)
         self.lp_assetX_volume = ttk.Spinbox(main_canvas, font=Labels_font, width=10, 
                                             from_=0.01, to=1000, increment=0.01,
-                                            command=self._sbox_handler_assetX, format=".%4")
+                                            command=self._sbox_handler_assetX) #, format=".%4")
         self.lp_assetX_volume.grid(row=2, column=1, padx=10, pady=7)
 
         ## -- ## -- ##
@@ -73,8 +73,7 @@ class StarterSetting:
         tk.Label(main_canvas, text='Asset Amount:', font=Labels_font).grid(row=4, column=0, padx=10, pady=7)
         self.lp_assetY_volume = ttk.Spinbox(main_canvas, font=Labels_font, width=10, 
                                             from_=0.01, to=1000, increment=0.01,
-                                            command=self._sbox_handler_assetY,
-                                            format=".%4")
+                                            command=self._sbox_handler_assetY) # , format=".%2")
         self.lp_assetY_volume.grid(row=4, column=1, padx=10, pady=7)
 
         ## -- ## -- ##
@@ -182,16 +181,16 @@ class StarterSetting:
             price = get_coin_cost(self.lp_assetX.get())
             self.lp_assetY_volume.delete(0, "end")
             self.lp_assetY_volume.insert(0, str(float(self.lp_assetX_volume.get()) * price))
-            self.window.update()
+            # self.window.update()
         else:
             pass
 
-    def _sbox_handler_assetX(self, event=None):
+    def _sbox_handler_assetY(self, event=None):
         if not is_None_and_empty_string(self.lp_assetY_volume.get()) and not is_None_and_empty_string(self.lp_assetX.get()):
             price = get_coin_cost(self.lp_assetX.get())
             self.lp_assetX_volume.delete(0, "end")
             self.lp_assetX_volume.insert(0, str(float(self.lp_assetY_volume.get()) / price))
-            self.window.update()
+            # self.window.update()
         else:
             pass
 

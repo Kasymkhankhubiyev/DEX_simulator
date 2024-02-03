@@ -5,6 +5,7 @@ from tkinter import messagebox
 
 from .DEX_module import DEX
 
+from .Deribit import get_coin_cost
 from helper import clear_window
 from helper import is_integer, is_float, is_numeric, is_None_and_empty_string
 from exceptions import SimulationParamsError
@@ -39,41 +40,59 @@ class StarterSetting:
         main_canvas.pack(anchor=tk.CENTER, expand=True)
 
         # TODO: pack into iterable function
+
+        ## -- ## -- ## 
         tk.Label(main_canvas, text='Liqudity Pool (LP) type:', font=Labels_font).grid(row=0, column=0, padx=20, pady=7)
         self.lp_type = ttk.Combobox(main_canvas, values=['Constant', 'Stochastic'], font=Labels_font,
                                     width=10)
         self.lp_type.grid(row=0, column=1, padx=10, pady=7)
 
+        ## -- ## -- ##
+
         tk.Label(main_canvas, text='LP asset X:', font=Labels_font).grid(row=1, column=0, padx=10, pady=7)
         self.lp_assetX = ttk.Combobox(main_canvas, values=['BTC', 'ETH'], font=Labels_font,
                                       width=10)
         self.lp_assetX.grid(row=1, column=1, padx=10, pady=7)
+        # 
+        self.lp_assetX.bind('<<ComboboxSelected>>', self._select_handler_assetX)
 
         tk.Label(main_canvas, text='Asset Amount:', font=Labels_font).grid(row=2, column=0, padx=10, pady=7)
         self.lp_assetX_volume = ttk.Spinbox(main_canvas, font=Labels_font, width=10, 
-                                            from_=0.01, to=1000, increment=0.01)
+                                            from_=0.01, to=1000, increment=0.01,
+                                            command=self._sbox_handler_assetX, format=".%4")
         self.lp_assetX_volume.grid(row=2, column=1, padx=10, pady=7)
+
+        ## -- ## -- ##
 
         tk.Label(main_canvas, text='LP asset Y:', font=Labels_font).grid(row=3, column=0, padx=10, pady=7)
         self.lp_assetY = ttk.Combobox(main_canvas, values=['USDC', 'USDT'], font=Labels_font,
                                       width=10)
+        # bind event when changed
         self.lp_assetY.grid(row=3, column=1, padx=10, pady=7)
 
         tk.Label(main_canvas, text='Asset Amount:', font=Labels_font).grid(row=4, column=0, padx=10, pady=7)
         self.lp_assetY_volume = ttk.Spinbox(main_canvas, font=Labels_font, width=10, 
-                                            from_=0.01, to=1000, increment=0.01)
+                                            from_=0.01, to=1000, increment=0.01,
+                                            command=self._sbox_handler_assetY,
+                                            format=".%4")
         self.lp_assetY_volume.grid(row=4, column=1, padx=10, pady=7)
+
+        ## -- ## -- ##
 
         tk.Label(main_canvas, text='AMM type:', font=Labels_font).grid(row=5, column=0, padx=10, pady=7)
         self.amm_type = ttk.Combobox(main_canvas, values=['Uniswap V3', 'SUMM', 'Weighted SUMM'],
                                      font=Labels_font, width=10)
         self.amm_type.grid(row=5, column=1, padx=10, pady=7)
 
+        ## -- ## -- ##
+
         tk.Label(main_canvas, text="Noisy LT amount:", font=Labels_font).grid(row=6, column=0,
                                                                               padx=10, pady=7)
         self.noisy_lt_num = ttk.Spinbox(main_canvas, font=Labels_font, width=10,
                                         from_=1, to=50, increment=1)
         self.noisy_lt_num.grid(row=6, column=1, padx=10, pady=7)
+
+        ## -- ## -- ## Back and Start buttions ## -- ## -- ##
 
         start_exit_canvas = tk.Canvas(main_canvas, width=30)
         start_exit_canvas.grid(row=7, column=0, columnspan=2, pady=20, padx=10, sticky='we')
@@ -82,6 +101,7 @@ class StarterSetting:
                                   command=self._back_to_main_menu)
         self.back_btn.grid(row=0, column=0, pady=3, padx=20, sticky='e')
 
+        # to make space between buttons
         tk.Label(start_exit_canvas, width=15, font=Labels_font).grid(row=0, column=1)
 
         self.start_btn = tk.Button(start_exit_canvas, text='Start', background='green', font=Labels_font,
@@ -112,8 +132,6 @@ class StarterSetting:
             if not is_None_and_empty_string(self.lp_assetX_volume.get()) and \
                 is_float(self.lp_assetX_volume.get().strip()) and \
                     float(self.lp_assetX_volume.get().strip()) >= 0.01:
-                
-                print(self.lp_assetX_volume.get().strip())
 
                 data['lp_assetX_volume'] = float(self.lp_assetX_volume.get().strip())
             else:
@@ -157,5 +175,27 @@ class StarterSetting:
 
         except Exception as e:
             messagebox.showerror(message=e.args)
+
+
+    def _sbox_handler_assetX(self, event=None):
+        if not is_None_and_empty_string(self.lp_assetX_volume.get()) and not is_None_and_empty_string(self.lp_assetY.get()):
+            price = get_coin_cost(self.lp_assetX.get())
+            self.lp_assetY_volume.delete(0, "end")
+            self.lp_assetY_volume.insert(0, str(float(self.lp_assetX_volume.get()) * price))
+            self.window.update()
+        else:
+            pass
+
+    def _sbox_handler_assetX(self, event=None):
+        if not is_None_and_empty_string(self.lp_assetY_volume.get()) and not is_None_and_empty_string(self.lp_assetX.get()):
+            price = get_coin_cost(self.lp_assetX.get())
+            self.lp_assetX_volume.delete(0, "end")
+            self.lp_assetX_volume.insert(0, str(float(self.lp_assetY_volume.get()) / price))
+            self.window.update()
+        else:
+            pass
+
+    def _select_handler_assetX(self, event=None):
+        pass
 
 

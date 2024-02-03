@@ -3,7 +3,10 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
+from .DEX_module import DEX
+
 from helper import clear_window
+from helper import is_integer, is_float, is_numeric, is_None_and_empty_string
 from exceptions import SimulationParamsError
 
 Labels_font = ('Arial', 30)
@@ -36,7 +39,6 @@ class StarterSetting:
         main_canvas.pack(anchor=tk.CENTER, expand=True)
 
         # TODO: pack into iterable function
-
         tk.Label(main_canvas, text='Liqudity Pool (LP) type:', font=Labels_font).grid(row=0, column=0, padx=20, pady=7)
         self.lp_type = ttk.Combobox(main_canvas, values=['Constant', 'Stochastic'], font=Labels_font,
                                     width=10)
@@ -53,7 +55,7 @@ class StarterSetting:
         self.lp_assetX_volume.grid(row=2, column=1, padx=10, pady=7)
 
         tk.Label(main_canvas, text='LP asset Y:', font=Labels_font).grid(row=3, column=0, padx=10, pady=7)
-        self.lp_assetY = ttk.Combobox(main_canvas, values=['BTC', 'ETH'], font=Labels_font,
+        self.lp_assetY = ttk.Combobox(main_canvas, values=['USDC', 'USDT'], font=Labels_font,
                                       width=10)
         self.lp_assetY.grid(row=3, column=1, padx=10, pady=7)
 
@@ -74,7 +76,7 @@ class StarterSetting:
         self.noisy_lt_num.grid(row=6, column=1, padx=10, pady=7)
 
         start_exit_canvas = tk.Canvas(main_canvas, width=30)
-        start_exit_canvas.grid(row=7, column=0, columnspan=2, pady=20, sticky='we')
+        start_exit_canvas.grid(row=7, column=0, columnspan=2, pady=20, padx=10, sticky='we')
 
         self.back_btn = tk.Button(start_exit_canvas, text='Back', background='red', font=Labels_font,
                                   command=self._back_to_main_menu)
@@ -82,7 +84,8 @@ class StarterSetting:
 
         tk.Label(start_exit_canvas, width=15, font=Labels_font).grid(row=0, column=1)
 
-        self.start_btn = tk.Button(start_exit_canvas, text='Start', background='green', font=Labels_font)
+        self.start_btn = tk.Button(start_exit_canvas, text='Start', background='green', font=Labels_font,
+                                   command=self._run_modulation)
         self.start_btn.grid(row=0, column=2, pady=3,padx=10, sticky='e')
 
 
@@ -94,36 +97,62 @@ class StarterSetting:
     def _run_modulation(self) ->None:
         try:
             data = {}
-            if self.lp_type.get() is not None and self.lp_type.get().strip() != '':
-                data['lp_type'] = self.lp_type.get()
+            if not is_None_and_empty_string(self.lp_type.get()):
+                data['lp_type'] = self.lp_type.get().strip()
             else:
                 raise SimulationParamsError('Liquidity Pool type is empty', '')
             
             # TODO: we need to check from available
-            if self.lp_assetX.get() is not None and self.lp_assetX.get().strip() != '':
-                data['lp_assetX'] = self.lp_assetX.get()
+            if not is_None_and_empty_string(self.lp_assetX.get()):
+                data['lp_assetX'] = self.lp_assetX.get().strip()
             else:
                 raise SimulationParamsError('Asset is not available', self.lp_assetX.get())
             
-            #TODO: we need to check if it is a number
-            if self.lp_assetX_volume.get() is not None and self.lp_assetX.get().strip() != '' and \
-                float(self.lp_assetX.get()) > 0.01:
+
+            if not is_None_and_empty_string(self.lp_assetX_volume.get()) and \
+                is_float(self.lp_assetX_volume.get().strip()) and \
+                    float(self.lp_assetX_volume.get().strip()) > 0.01:
 
                 data['lp_assetX_volume'] = float(self.lp_assetX_volume.get())
             else:
-                raise SimulationParamsError(f'Asset {self.lp_assetX.get()} volume must be integer', 
+                raise SimulationParamsError(f'Asset {self.lp_assetX.get()} volume must be numeric', 
                                             self.lp_assetX_volume.get())
             
-            # TODO: make extruct data from self.lp_assetY
+            # TODO: we need to check from available
+            if self.lp_assetY.get() is not None and self.lp_assetY.get().strip() != '':
+                data['lp_assetY'] = self.lp_assetY.get()
+            else:
+                raise SimulationParamsError('Asset is not available', self.lp_assetY.get())
 
-            # TODO: make extruct data from self.lp_assetY_volume
+        
+            if not is_None_and_empty_string(self.lp_assetY_volume.get()) and \
+                is_float(self.lp_assetY_volume.get().strip()) and \
+                    float(self.lp_assetY_volume.get().strip()) > 0.01:
 
-            # TODO: make extruct data from self.amm_type
+                data['lp_assetY_volume'] = float(self.lp_assetY_volume.get())
+            else:
+                raise SimulationParamsError(f'Asset {self.lp_assetY_volume.get()} volume must be numeric',
+                                            self.lp_assetY_volume.get())
 
-            # TODO: make extruct data from self.noisy_lt_num
+            # TODO: we need to check from available
+            if self.amm_type.get() is not None and self.amm_type.get().strip() != '':
+                data['amm_type'] = self.amm_type.get().strip()
+            else:
+                raise SimulationParamsError('Not valid AMM type', self.amm_type.get().strip())
+
             
+            if not is_None_and_empty_string(self.noisy_lt_num.get()) and \
+                is_integer(self.noisy_lt_num.get().strip()) and int(self.noisy_lt_num.get().strip()) >= 0:
+
+                data['noisy_lt_num'] = int(self.noisy_lt_num.get().strip())
+            else:
+                raise SimulationParamsError('Noisy traders number must be integer', self.noisy_lt_num.get().strip())
             
+            dm = DEX(self.window)
+
             clear_window(self.window, 'pack')
+            dm.draw_main()
+
         except Exception as e:
             messagebox.showerror(e.args)
 

@@ -29,3 +29,69 @@ def clear_window(window: Tk, widget_place_type: str) -> None:
 
     for _slave in _slaves:
         _slave.destroy()
+
+
+def is_None_and_empty_string(input: str) -> bool:
+    """
+        Checks if an imput string is None or empty or not
+
+        Atributes:
+            input, str - an input string to check
+
+        Returns:
+            is_None_or_empty, bool - True if None or empty, else False
+    """
+    if input is None or input.strip() == '':
+        return True
+    else:
+        return False
+    
+
+def is_float(input: str) -> bool:
+    """
+        Checks if an input string is a float or not
+
+        Atributes:
+            input, str - a string to check
+
+        Returns:
+            is_float, bool - True if float, else False
+    """
+    try:
+        float(input)
+        return True
+    except Exception:
+        return False
+    
+
+def is_integer(input: str) -> bool:
+    """
+        Checks if an input string is an integer or not
+
+        Atributes:
+            input, str - a string to check
+
+        Returns:
+            is_float, bool - True if integer, else False
+    """
+    try:
+        int(input)
+        return True
+    except Exception:
+        return False
+    
+
+def is_numeric(input: str) -> bool:
+    """
+        Checks if an input string is numeric or not
+
+        Atributes:
+            input, str - a string to check
+
+        Returns:
+            is_numeric, bool - True if numeric, else False
+    """
+    if is_float(input) or is_integer(input):
+        return True
+    else:
+        return False

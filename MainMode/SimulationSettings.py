@@ -106,14 +106,16 @@ class StarterSetting:
             if not is_None_and_empty_string(self.lp_assetX.get()):
                 data['lp_assetX'] = self.lp_assetX.get().strip()
             else:
-                raise SimulationParamsError('Asset is not available', self.lp_assetX.get())
+                raise SimulationParamsError('The First asset is not available', self.lp_assetX.get())
             
 
             if not is_None_and_empty_string(self.lp_assetX_volume.get()) and \
                 is_float(self.lp_assetX_volume.get().strip()) and \
-                    float(self.lp_assetX_volume.get().strip()) > 0.01:
+                    float(self.lp_assetX_volume.get().strip()) >= 0.01:
+                
+                print(self.lp_assetX_volume.get().strip())
 
-                data['lp_assetX_volume'] = float(self.lp_assetX_volume.get())
+                data['lp_assetX_volume'] = float(self.lp_assetX_volume.get().strip())
             else:
                 raise SimulationParamsError(f'Asset {self.lp_assetX.get()} volume must be numeric', 
                                             self.lp_assetX_volume.get())
@@ -122,12 +124,12 @@ class StarterSetting:
             if self.lp_assetY.get() is not None and self.lp_assetY.get().strip() != '':
                 data['lp_assetY'] = self.lp_assetY.get()
             else:
-                raise SimulationParamsError('Asset is not available', self.lp_assetY.get())
+                raise SimulationParamsError('The second asset is not available', self.lp_assetY.get())
 
         
             if not is_None_and_empty_string(self.lp_assetY_volume.get()) and \
                 is_float(self.lp_assetY_volume.get().strip()) and \
-                    float(self.lp_assetY_volume.get().strip()) > 0.01:
+                    float(self.lp_assetY_volume.get().strip()) >= 0.01:
 
                 data['lp_assetY_volume'] = float(self.lp_assetY_volume.get())
             else:
@@ -148,12 +150,12 @@ class StarterSetting:
             else:
                 raise SimulationParamsError('Noisy traders number must be integer', self.noisy_lt_num.get().strip())
             
-            dm = DEX(self.window)
+            dm = DEX(self.window, data)
 
             clear_window(self.window, 'pack')
             dm.draw_main()
 
         except Exception as e:
-            messagebox.showerror(e.args)
+            messagebox.showerror(message=e.args)
 
 

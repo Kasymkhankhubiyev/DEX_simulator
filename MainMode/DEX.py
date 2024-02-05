@@ -5,6 +5,9 @@ gt = GeckoTerminalAPI()
 
 def get_price(assetX: str, assetY: str, api_response: dict) -> dict:
     """
+    # TODO: What is an API response? the DEX module must not interact with any API directly,
+    remove api_response atribute.
+
     Adapted function to work with the API response directly, with error handling for missing 'symbol' key.
 
     Args:

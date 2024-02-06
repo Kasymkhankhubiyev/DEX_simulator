@@ -1,15 +1,15 @@
-from tkinter import Tk
-# from customtkinter import CTk as Tk
+# from tkinter import Tk
+from customtkinter import CTk
 from tkinter import messagebox
 
 
-def create_window() -> Tk:
+def create_window() -> CTk:
     """
     Создаем главное окно
     :return: window
     """
 
-    window = Tk()
+    window = CTk()
     window.title("DEX Simulator")
     w = window.winfo_screenwidth()
     h = window.winfo_screenheight()
@@ -19,7 +19,7 @@ def create_window() -> Tk:
     return window
 
 
-def clear_window(window: Tk, widget_place_type: str) -> None:
+def clear_window(window: CTk, widget_place_type: str) -> None:
     
     if widget_place_type == 'place':
         _slaves = window.place_slaves()

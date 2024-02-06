@@ -1,25 +1,27 @@
-import tkinter as tk
+import customtkinter as ctk
+
+ctk.set_appearance_mode("dark")
 
 from helper import clear_window
 from .SimulationSettings import StarterSetting
 from .ArbitrageSetting import ArbitrageSetting
 
 
-btns_font = ('Arial', 35)
+btns_font = ('Arial', 55)
 
 class MainMenu:
     def __init__(self, window) -> None:
         self.window = window
 
     def draw_main(self):
-        place_canvas = tk.Canvas(self.window)
-        place_canvas.pack(anchor=tk.CENTER, expand=True)
+        place_canvas = ctk.CTkFrame(self.window)
+        place_canvas.pack(anchor=ctk.CENTER, expand=True)
 
-        self.arbitrage_mode_btn = tk.Button(place_canvas, text='Arbitrage', font=btns_font,
+        self.arbitrage_mode_btn = ctk.CTkButton(place_canvas, text='Arbitrage', font=btns_font,
                                             command=self._go_to_arbitrage)
         self.arbitrage_mode_btn.grid(row=0, column=0, pady=10)
 
-        self.modulation_mode_btn = tk.Button(place_canvas, text='Simulator', font=btns_font,
+        self.modulation_mode_btn = ctk.CTkButton(place_canvas, text='Simulator', font=btns_font,
                                              command=self._go_to_modulation)
         self.modulation_mode_btn.grid(row=1, column=0, pady=10)
 

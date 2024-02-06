@@ -43,37 +43,40 @@ class DEX:
                  relief=tk.SUNKEN, font=label_font).grid(row=0, column=0, 
                                                          padx=5, rowspan=2,
                                                          sticky='w')
-        tk.Label(upper_line, text=f'DEPTH -- {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"]}', 
+        tk.Label(upper_line, text=f'DEPTH -- {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"]:.5f}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=0,column=1, 
                                                          padx=5, rowspan=2,
                                                          sticky='w')
         
-        tk.Label(upper_line, text=f'{self.data["lp_assetX"]} amount -- {self.data["lp_assetX_volume"]}', 
+        tk.Label(upper_line, text=f'{self.data["lp_assetX"]} amount -- {self.data["lp_assetX_volume"]:.5f}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=0,column=2, 
                                                          padx=5, pady=3,
                                                          sticky='w')
-        tk.Label(upper_line, text=f'{self.data["lp_assetY"]} amount -- {self.data["lp_assetY_volume"]}', 
+        tk.Label(upper_line, text=f'{self.data["lp_assetY"]} amount -- {self.data["lp_assetY_volume"]:.5f}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=1,column=2, 
                                                          padx=5, pady=3,
                                                          sticky='w')
         
         tk.Label(upper_line, 
-                 text=f'{self.data["lp_assetX"]} pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]}', 
+                 text=f'{self.data["lp_assetX"]} pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]:.5f}', 
                  relief=tk.SUNKEN, font=label_font,
                  foreground='red').grid(row=0, column=3, 
-                                                         padx=5, pady=3,
-                                                         sticky='w')
-        tk.Label(upper_line, text=f'{self.data["lp_assetX"]} stock price: {get_coin_cost(self.data["lp_assetX"])}', 
+                                        padx=5, pady=3,
+                                        sticky='w')
+        
+        coint_cost = get_coin_cost(self.data["lp_assetX"])
+
+        tk.Label(upper_line, text=f'{self.data["lp_assetX"]} stock price: {coint_cost:.5f}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=1, column=3, 
                                                          padx=5, pady=3,
                                                          sticky='w')
         
         tk.Label(upper_line, 
-                 text=f'{self.data["lp_assetY"]} pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]}', 
+                 text=f'{self.data["lp_assetY"]} pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]:.5f}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=0, column=4, 
                                                          padx=5, pady=3,
                                                          sticky='w')
-        tk.Label(upper_line, text=f'{self.data["lp_assetY"]} stock price: y_n', 
+        tk.Label(upper_line, text=f'{self.data["lp_assetY"]} stock price: {1 / coint_cost:.5f}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=1, column=4, 
                                                          padx=5, pady=3,
                                                          sticky='w')

@@ -63,7 +63,7 @@ class ArbitrageSetting:
 
         for idx, (_name, _value) in enumerate(zip(self._labels_names, _labels_values)):
             tk.Label(main_canvas, text=_name, font=Labels_font).grid(row=idx+1, column=0, padx=10, pady=7)
-            value_label = tk.Label(main_canvas, text=_value, font=Labels_font)
+            value_label = tk.Label(main_canvas, text=f'{float(_value):.7f}', font=Labels_font)
             value_label.grid(row=idx+1, column=1, padx=10, pady=7)
             self._value_label_objects.append(value_label)
 
@@ -89,8 +89,11 @@ class ArbitrageSetting:
                 self.pools_data[pool_name]['price_change_percentage_h1'],
                 self.pools_data[pool_name]['price_change_percentage_h24']]
 
-    def _select_handler(self):
-        pass
+    def _select_handler(self, event):
+        pool_name = self.lp_type.get()
+        label_values = self._get_labels_values(pool_name)
+        for lbl_obj, lbl_val in zip(self._value_label_objects, label_values):
+            lbl_obj.configure(text=f'{float(lbl_val):.7f}')
 
     def _back_to_main_menu(self) -> None:
         clear_window(self.window, 'pack')

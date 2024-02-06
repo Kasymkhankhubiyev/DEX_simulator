@@ -34,6 +34,7 @@ class DEX:
         amm_data = {'assetX': self.pool_name.split('/')[0].strip(),
                     'assetY': self.pool_name.split('/')[-1].strip(),
                     'assetX_volume': self.pool_data['quote_token_price_base'],
-                    'assetY_volume': self.pool_data['base_token_price_quote']}
+                    'assetY_volume': self.pool_data['base_token_price_quote'],
+                    'pool_volume': self.pool_data['market_cap_usd']}
         amm_graph = UniswapCanvas(amm_canvas, amm_data)
         amm_graph.draw({})

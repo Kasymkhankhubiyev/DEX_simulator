@@ -39,8 +39,8 @@ class UniswapCanvas:
         self.ax.set_xlabel(f'{self.data["assetX"]}')
         self.ax.set_ylabel(f'{self.data["assetY"]}')
 
-        x = np.linspace(0.5, 70, 100)
-        y = 43000 / x
+        x = np.linspace(200, 500, 100)
+        y = float(self.data["pool_volume"]) / x
 
         self.ax.plot(x, y, label='Pool')
         

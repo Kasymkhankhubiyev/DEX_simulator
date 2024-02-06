@@ -11,6 +11,7 @@ class MainMenu:
     def __init__(self, window) -> None:
         self.window = window
 
+
     def draw_main(self):
         place_canvas = tk.Canvas(self.window)
         place_canvas.pack(anchor=tk.CENTER, expand=True)
@@ -23,12 +24,14 @@ class MainMenu:
                                              command=self._go_to_modulation)
         self.modulation_mode_btn.grid(row=1, column=0, pady=10)
 
+
     def _go_to_modulation(self):
         clear_window(self.window, 'pack')
         # self.window.update()
 
         simulation_settings_window = StarterSetting(self, self.window)
         simulation_settings_window.draw_main()
+
 
     def _go_to_arbitrage(self):
         clear_window(self.window, 'pack')

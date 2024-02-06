@@ -16,7 +16,7 @@ class UniswapCanvas:
                         'assetY': ,
                         'assetX_volume': ,
                         'assetY_volume':
-                        'coint_cost': }
+                        'coin_cost': }
         
         """
         self.window = canvas

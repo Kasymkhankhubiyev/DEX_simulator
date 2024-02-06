@@ -5,11 +5,9 @@ from tkinter import messagebox
 
 # from .DEX_module import DEX
 from .GeckoAPI import get_pools
+from .Arbitrage_module import DEX
 
-from .Deribit import get_coin_cost
 from helper import clear_window
-from helper import is_integer, is_float, is_numeric, is_None_and_empty_string
-from exceptions import SimulationParamsError
 
 
 Labels_font = ('Arial', 30)
@@ -42,7 +40,7 @@ class ArbitrageSetting:
         """
         self.lp_type = ttk.Combobox(main_canvas, values=self.pools,
                                     width=20, height=20,
-                                    font=Labels_font)
+                                    font=Labels_font, state='readonly')
         self.lp_type.grid(row=0, column=1, padx=10, pady=7)
         self.lp_type.set(self.pools[0])
 
@@ -100,4 +98,8 @@ class ArbitrageSetting:
         self.main_menu.draw_main()
 
     def _run_modulation(self) -> None:
-        pass
+        pool_name = self.lp_type.get()
+        data = self.pools_data[pool_name]
+        clear_window(self.window, 'pack')
+        dex = DEX(window=self.window, data=data, pool_name=pool_name)
+        dex.draw()

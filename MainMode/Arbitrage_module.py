@@ -28,6 +28,8 @@ class DEX:
         self.pool_name = pool_name
 
     def draw(self) -> None:
+        # pool volume in base tocken
+        pool_vol = self.pool_data['market_cap_usd'] / self.pool_data['base_token_price_usd']
         amm_canvas = ctk.CTkFrame(self.window)
         amm_canvas.grid(row=1, column=0, padx=10, pady=10)
         amm_data = {'assetX': self.pool_name.split('/')[0].strip(),

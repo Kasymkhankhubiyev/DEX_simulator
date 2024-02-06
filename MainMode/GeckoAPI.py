@@ -24,8 +24,6 @@ def get_pools(assetX='eth'):
     res = gt.network_trending_pools(assetX.lower())
     data = res['data']
 
-    print(data)
-
     pools = [_data['attributes']['name'] for _data in data if _data['attributes']['market_cap_usd'] is not None]
 
     pools_data = {}

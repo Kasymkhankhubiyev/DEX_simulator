@@ -24,6 +24,8 @@ def get_pools(assetX='eth'):
     res = gt.network_trending_pools(assetX.lower())
     data = res['data']
 
+    print(data)
+
     pools = [_data['attributes']['name'] for _data in data if _data['attributes']['market_cap_usd'] is not None]
 
     pools_data = {}
@@ -34,7 +36,7 @@ def get_pools(assetX='eth'):
                 'base_token_price_quote': _data['attributes']['base_token_price_quote_token'],
                 'quote_token_price_usd': _data['attributes']['quote_token_price_usd'],
                 'quote_token_price_base': _data['attributes']['quote_token_price_base_token'],
-                'market_cap_usd': _data['attributes']['market_cap_usd'],
+                'market_cap_usd': _data['attributes']['reserve_in_usd'],
                 'price_change_percentage_h1': _data['attributes']['price_change_percentage']['h1'],
                 'price_change_percentage_h24': _data['attributes']['price_change_percentage']['h24']} 
     

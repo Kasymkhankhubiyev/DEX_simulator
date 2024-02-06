@@ -1,6 +1,6 @@
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from tkinter import Canvas
+from customtkinter import CTkFrame
 from tkinter import BOTH
 
 from exceptions import AMM_GRAP_ERROR
@@ -10,7 +10,7 @@ import numpy as np
 
 
 class UniswapCanvas:
-    def __init__(self, canvas: Canvas, amm_data: dict) -> None:
+    def __init__(self, canvas: CTkFrame, amm_data: dict) -> None:
         """
             amm_data = {'assetX': ,
                         'assetY': ,

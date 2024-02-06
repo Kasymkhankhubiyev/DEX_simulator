@@ -1,11 +1,10 @@
-import tkinter as tk
-
+import customtkinter as ctk
 
 from .Graph import UniswapCanvas
 
 
 class DEX:
-    def __init__(self, window: tk.Tk, data: dict, pool_name: str) -> None:
+    def __init__(self, window: ctk.CTk, data: dict, pool_name: str) -> None:
         """
         
             Arguments:
@@ -29,7 +28,7 @@ class DEX:
         self.pool_name = pool_name
 
     def draw(self) -> None:
-        amm_canvas = tk.Canvas(self.window, borderwidth=10)
+        amm_canvas = ctk.CTkFrame(self.window)
         amm_canvas.grid(row=1, column=0, padx=10, pady=10)
         amm_data = {'assetX': self.pool_name.split('/')[0].strip(),
                     'assetY': self.pool_name.split('/')[-1].strip(),

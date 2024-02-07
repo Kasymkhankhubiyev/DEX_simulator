@@ -1,9 +1,11 @@
 import tkinter as tk
 
 
+from ..LTakerMode.LTaker import LTaker
 from .Graph import UniswapCanvas
 from .pool_eval import get_assets_num
 
+label_font = ('TimesNewRoman', 20)
 
 class DEX:
     def __init__(self, window: tk.Tk, data: dict, pool_name: str) -> None:
@@ -26,8 +28,13 @@ class DEX:
         """
         self.window = window
         self.canvas, self.pool_canvas = None, None
+
         self.pool_data = data
         self.pool_name = pool_name
+
+        self.liq_taker = None
+        self.amm = None
+
 
     def draw(self) -> None:
         M, N = get_assets_num(self.pool_name)
@@ -39,41 +46,52 @@ class DEX:
 
         liq_taker_canvas_row_num = 0
 
-        tk.Label(liq_taker_canvas, text='Глубина LP:').grid(row=liq_taker_canvas_row_num, 
-                                                            column=0, padx=5, pady=5)
+        tk.Label(liq_taker_canvas, text='Глубина LP:',
+                 font=label_font).grid(row=liq_taker_canvas_row_num, 
+                                        column=0, padx=5, pady=5)
         pool_depth =float(self.pool_data['market_cap_usd'])/float(self.pool_data['base_token_price_usd'])
-        tk.Label(liq_taker_canvas, text=f"{pool_depth:.5f}").grid(row=liq_taker_canvas_row_num, 
-                                                                  column=1, padx=5, pady=5)
+        tk.Label(liq_taker_canvas, text=f"{pool_depth:.5f}", 
+                 font=label_font).grid(row=liq_taker_canvas_row_num, 
+                                        column=1, padx=5, pady=5)
         liq_taker_canvas_row_num += 1
 
-        tk.Label(liq_taker_canvas, text=f"1 {self.pool_name.split('/')[0].strip()} =" +\
+        tk.Label(liq_taker_canvas, text=f"1 {self.pool_name.split('/')[-1].strip()} =" +\
                   f" {float(self.pool_data['quote_token_price_base']):.5f} " +\
-                    f"{self.pool_name.split('/')[-1].strip()}").grid(row=liq_taker_canvas_row_num,
-                                                                     column=0, columnspan=2, 
-                                                                     padx=5, pady=5)
+                    f"{self.pool_name.split('/')[-1].strip()}",
+                 font=label_font).grid(row=liq_taker_canvas_row_num,
+                                        column=0, columnspan=2, 
+                                        padx=5, pady=5)
         liq_taker_canvas_row_num += 1
 
         # TODO: make an appropriate output format for a low price tockens
-        tk.Label(liq_taker_canvas, text=f"1 {self.pool_name.split('/')[-1].strip()} =" +\
+        tk.Label(liq_taker_canvas, text=f"1 {self.pool_name.split('/')[0].strip()} =" +\
                     f" {float(self.pool_data['base_token_price_quote']):.9f} " +\
-                        f"{self.pool_name.split('/')[-1].strip()}").grid(row=liq_taker_canvas_row_num, 
-                                                                         column=0, columnspan=2, 
-                                                                         padx=5, pady=5)
+                        f"{self.pool_name.split('/')[-1].strip()}",
+                        font=label_font).grid(row=liq_taker_canvas_row_num, 
+                                                column=0, columnspan=2, 
+                                                padx=5, pady=5)
         liq_taker_canvas_row_num += 1
 
-        tk.Label(liq_taker_canvas, text='Кошелек:').grid(row=liq_taker_canvas_row_num, 
-                                                         column=0, columnspan=2)
+        tk.Label(liq_taker_canvas, text='Кошелек:', 
+                 font=label_font, relief=tk.SUNKEN).grid(row=liq_taker_canvas_row_num, 
+                                                                          column=0, columnspan=2)
         liq_taker_canvas_row_num += 1
-        tk.Label(liq_taker_canvas, text=f'{self.pool_name.split("/")[0].strip()}').grid(row=liq_taker_canvas_row_num, 
-                                                                                        column=0, 
-                                                                                        padx=5, pady=5)
-        tk.Label(liq_taker_canvas, text='100').grid(row=liq_taker_canvas_row_num, column=1, padx=5, pady=5)
+        tk.Label(liq_taker_canvas, text=f'{self.pool_name.split("/")[0].strip()}',
+                 font=label_font).grid(row=liq_taker_canvas_row_num, 
+                                        column=0, sticky='w',
+                                        padx=5, pady=5)
+        tk.Label(liq_taker_canvas, text='100',
+                 font=label_font).grid(row=liq_taker_canvas_row_num, 
+                                       column=1, padx=5, pady=5)
         liq_taker_canvas_row_num += 1
-        tk.Label(liq_taker_canvas, text=f'{self.pool_name.split("/")[1-1].strip()}').grid(row=liq_taker_canvas_row_num, 
-                                                                                          column=0, 
-                                                                                          padx=5, pady=5)
-        tk.Label(liq_taker_canvas, text='100').grid(row=liq_taker_canvas_row_num, column=1, padx=5, pady=5)
 
+        tk.Label(liq_taker_canvas, text=f'{self.pool_name.split("/")[-1].strip()}',
+                 font=label_font).grid(row=liq_taker_canvas_row_num, 
+                                        column=0, sticky= 'w',
+                                        padx=5, pady=5)
+        tk.Label(liq_taker_canvas, text='100',
+                 font=label_font).grid(row=liq_taker_canvas_row_num, 
+                                       column=1, padx=5, pady=5)
 
         ## -- ## -- ## -- ## -- ##
         amm_data = {'assetX': self.pool_name.split('/')[0].strip(),

@@ -1,4 +1,4 @@
-from GeckoAPI import get_pools
+from .GeckoAPI import get_pools
 
 def _calculate_assets_num(pool_volume_usd: float, base_price_usd: float, quote_price_usd: float, 
                          base_price_quote: float, quote_price_base: float) -> 'tuple[float, float]':

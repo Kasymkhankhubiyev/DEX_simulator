@@ -35,13 +35,22 @@ class UniswapCanvas:
 
     def draw(self, data_to_plot: dict) -> None:
 
+        rate = 0.7
+
         self.ax.cla()
         self.ax.set_xlabel(f'{self.data["assetX"]}')
         self.ax.set_ylabel(f'{self.data["assetY"]}')
 
-        x = np.linspace(200, 500, 100)
-        y = float(self.data["pool_volume"]) / x
+        y = np.linspace(self.data['assetX_volume'] * (1. - rate), 
+                        self.data['assetX_volume'] * (1. + rate), 100)
+        
+        x = float(self.data["pool_volume"]) / y
 
         self.ax.plot(x, y, label='Pool')
+        self.ax.scatter(self.data["pool_volume"] / self.data['assetX_volume'], 
+                        self.data['assetX_volume'])
+        
+        self.ax.plot([self.data["pool_volume"] / self.data['assetX_volume']]*100, y, '--b')
         
         self.canvas.draw()
+        

@@ -5,7 +5,7 @@ from .SimulationSettings import StarterSetting
 from .ArbitrageSetting import ArbitrageSetting
 
 
-btns_font = ('Arial', 35)
+btns_font = ('Arial', 55)
 
 class MainMenu:
     def __init__(self, window) -> None:

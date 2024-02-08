@@ -20,7 +20,6 @@ if __name__ == "__main__":
 
     win.protocol('WM_DELETE_WINDOW', on_closing)
 
-    # main_mode = dex.DEX(win)
     main_mode = mm.MainMenu(win)
     main_mode.draw_main()
 

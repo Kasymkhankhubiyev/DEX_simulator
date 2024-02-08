@@ -31,9 +31,14 @@ class UniswapCanvas:
         self.ax.set_ylabel(f'{self.data["assetY"]}')
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=BOTH, expand=True)
-    
+        
 
-    def draw(self, data_to_plot: dict) -> None:
+    def reset_data_info(self, data: dict) -> None:
+        self.canvas = FigureCanvasTkAgg(self.fig, self.window)
+
+        self.data = data
+    
+    def draw(self) -> None:
 
         rate = 0.7
 
@@ -51,6 +56,6 @@ class UniswapCanvas:
                         self.data['assetX_volume'])
         
         self.ax.plot([self.data["pool_volume"] / self.data['assetX_volume']]*100, y, '--b')
+        # self.ax.plot(x, [self.data["pool_volume"] / self.data['assetY_volume']]*100, '--r')
         
         self.canvas.draw()
-        

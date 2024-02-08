@@ -40,7 +40,8 @@ def _calculate_assets_num(pool_volume_usd: float, base_price_usd: float, quote_p
 
     return M, N
 
-def get_assets_num(pool_name: str) -> 'tuple[float, float]':
+
+def get_assets_num_by_pool_name(pool_name: str) -> 'tuple[float, float]':
     """
         returns assets number for a given pool name
 
@@ -55,6 +56,26 @@ def get_assets_num(pool_name: str) -> 'tuple[float, float]':
     _, pools_data = get_pools()
 
     data = pools_data[pool_name]
+
+    return _calculate_assets_num(pool_volume_usd=float(data['market_cap_usd']),
+                                base_price_usd=float(data['base_token_price_usd']),
+                                quote_price_usd=float(data['quote_token_price_usd']),
+                                base_price_quote=float(data['base_token_price_quote']),
+                                quote_price_base=float(data['quote_token_price_base']))
+
+
+def get_assets_num(data: dict) -> 'tuple[float, float]':
+    """
+        returns assets number for a given pool name
+
+        Arguments:
+            pool_name, str - a pool name in a format `Base tocken / Quote tocken`
+
+        Returns:
+            M, float - number of quote tockens
+            N, float - number of base tockens
+    
+    """
 
     return _calculate_assets_num(pool_volume_usd=float(data['market_cap_usd']),
                                 base_price_usd=float(data['base_token_price_usd']),

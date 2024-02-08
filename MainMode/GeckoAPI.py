@@ -39,3 +39,13 @@ def get_pools(assetX='eth'):
                 'price_change_percentage_h24': _data['attributes']['price_change_percentage']['h24']} 
     
     return pools, pools_data
+
+
+
+def get_pool_data_by_name(pool_name: str) -> dict:
+    """
+    
+    """
+    _, pools_data = get_pools()
+    return pools_data[pool_name]
+    

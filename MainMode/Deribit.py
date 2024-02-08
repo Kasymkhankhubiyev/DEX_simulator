@@ -50,6 +50,7 @@ async def pub_api(msg):
 def get_current_mid_price(asset: str):
     message = make_public_message(asset)
     book = asyncio.get_event_loop().run_until_complete(pub_api(json.dumps(message)))
+    print(book)
     asks = book['result']['asks'][0][0]
     bids = book['result']['bids'][0][0]
     return (asks + bids) / 2
@@ -58,3 +59,4 @@ def get_order_book(message: dict):
     book = asyncio.get_event_loop().run_until_complete(pub_api(json.dumps(message)))
     asks = book['result']['asks']
     bids = book['result']['bids']
+    return asks, bids

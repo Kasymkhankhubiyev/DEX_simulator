@@ -2,10 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
+
 from .LTaker import LTaker
 from .Graph import UniswapCanvas
-from .pool_eval import get_assets_num
+from .pool_eval import get_assets_num_by_pool_name, get_assets_num
 from helper import clear_window
+from .GeckoAPI import get_pool_data_by_name
 
 
 label_font = ('TimesNewRoman', 20)
@@ -41,15 +43,22 @@ class DEX:
         self.liq_taker = LTaker({self.pool_name.split("/")[-1].strip(): 10,
                                  self.pool_name.split("/")[0].strip(): 5 * float(self.pool_data['quote_token_price_base'])
                                 })
-        self.amm = None
+        
+        M, N = get_assets_num_by_pool_name(self.pool_name)
+        self.amm_data = {'assetX': self.pool_name.split('/')[0].strip(),
+                    'assetY': self.pool_name.split('/')[-1].strip(),
+                    'assetX_volume': M,
+                    'assetY_volume': N,
+                    'quote_price_base': float(self.pool_data['quote_token_price_base']),
+                    'pool_volume': float(self.pool_data['market_cap_usd']) / float(self.pool_data['base_token_price_usd'])}
 
 
     def draw(self) -> None:
-        M, N = get_assets_num(self.pool_name)
+        self.amm_canvas = tk.Canvas(self.window, borderwidth=10)
         tk.Button(self.window, text='Back to Menu', bg='red', font=title_label_font,
                   command=self._go_to_main_menu).grid(row=0, column=0, sticky='w', pady=10, padx=10)
-        amm_canvas = tk.Canvas(self.window, borderwidth=10)
-        amm_canvas.grid(row=1, column=0, padx=10, pady=10)
+        # self.amm_canvas = tk.Canvas(self.window, borderwidth=10)
+        self.amm_canvas.grid(row=1, column=0, padx=10, pady=10)
         ## -- ## -- ## -- ## -- ##
         liq_taker_canvas = tk.Canvas(self.window)
         liq_taker_canvas.grid(row=1, column=1, padx=10, pady=10)
@@ -192,15 +201,9 @@ class DEX:
 
         ## -- ## -- ## -- ## -- ##
 
-        amm_data = {'assetX': self.pool_name.split('/')[0].strip(),
-                    'assetY': self.pool_name.split('/')[-1].strip(),
-                    'assetX_volume': M,
-                    'assetY_volume': N,
-                    'quote_price_base': float(self.pool_data['quote_token_price_base']),
-                    'pool_volume': float(self.pool_data['market_cap_usd']) / float(self.pool_data['base_token_price_usd'])}
-        
-        amm_graph = UniswapCanvas(amm_canvas, amm_data)
-        amm_graph.draw({})
+        self.amm_graph = UniswapCanvas(self.amm_canvas, self.amm_data)
+
+        self.amm_graph.draw()
 
     def _select_handler(self) -> None:
         quote_num = float(self.order_volume.get())
@@ -244,6 +247,18 @@ class DEX:
 
     def _refresh_page(self) -> None:
         clear_window(self.window, 'grid')
+        self.amm_canvas = tk.Canvas(self.window, borderwidth=10)
+        self.pool_data = get_pool_data_by_name(self.pool_name)
+        M, N = get_assets_num(self.pool_data)
+        amm_data = {'assetX': self.pool_name.split('/')[0].strip(),
+                    'assetY': self.pool_name.split('/')[-1].strip(),
+                    'assetX_volume': M,
+                    'assetY_volume': N,
+                    'quote_price_base': float(self.pool_data['quote_token_price_base']),
+                    'pool_volume': float(self.pool_data['market_cap_usd']) / float(self.pool_data['base_token_price_usd'])}
+        # self.amm_graph.window = self.amm_canvas
+        # self.amm_graph.reset_data_info(amm_data)
+        self.amm_data = amm_data
         self.draw()
 
     def _go_to_main_menu(self) -> None:

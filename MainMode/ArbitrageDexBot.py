@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 
+import random
+import time
+
 
 from .LTaker import LTaker
 from .Graph import UniswapCanvas, PNL
@@ -13,7 +16,7 @@ from .GeckoAPI import get_pool_data_by_name
 label_font = ('TimesNewRoman', 20)
 title_label_font = ('TimesNewRoman', 30)
 
-class DEX:
+class DEXBot:
     def __init__(self, main_menu, window: tk.Tk, data: dict, pool_name: str,
                  wallet_data = None) -> None:
         """
@@ -32,6 +35,8 @@ class DEX:
                                         price_change_percentage_h24: float
                                 }
         """
+        self.runable = True
+        self.counter = 1
 
         self.window = window
         self.main_menu = main_menu
@@ -53,6 +58,21 @@ class DEX:
                     'quote_price_base': float(self.pool_data['quote_token_price_base']),
                     'pool_volume': float(self.pool_data['market_cap_usd']) / float(self.pool_data['base_token_price_usd'])}
 
+    # def run(self) -> None:
+    #     if not self.runable:
+    #         self.runable = True
+    #         self.draw()
+
+    #     # print('run!')
+    #     # while(self.runable):
+    #         time.sleep(10)
+    #         order_value = random.randint(1, 10) * 0.01
+    #         bids = (-1) ** random.randint(1, 2)
+
+    #         self._make_order(order_value, bids)
+
+    def stop(self) -> None:
+        self.runable = True
 
     def draw(self) -> None:
         self.amm_canvas = tk.Canvas(self.window, borderwidth=10)
@@ -201,8 +221,7 @@ class DEX:
         
         liq_taker_canvas_row_num += 1
 
-        self.make_order_btn = tk.Button(liq_taker_canvas, text='Make Order', 
-                                        command=self._make_order, font=label_font)
+        self.make_order_btn = tk.Button(liq_taker_canvas, text='Make Order', state='disabled', font=label_font)
         self.make_order_btn.grid(row=liq_taker_canvas_row_num, column=0, padx=5, pady=5)
         
         liq_taker_canvas_row_num += 1
@@ -222,6 +241,23 @@ class DEX:
         self.pnl = PNL(self.pnl_canvas, self.liq_taker.get_pnl(), self.liq_taker.initial_balance_usd)
         self.pnl.draw()
 
+        if self.counter % 10 == 0:
+            # time.sleep(10)
+            print('made an order')
+            order_value = random.randint(1, 10) * 0.01
+            bids = (-1) ** random.randint(1, 2)
+
+            self._make_order(quote_num=order_value, transaction_type=bids)
+        else:
+            self.counter += 1
+            self.window.update()
+
+    def run(self):
+        order_value = random.randint(1, 10) * 0.01
+        bids = (-1) ** random.randint(1, 2)
+
+        self._make_order(quote_num=order_value, transaction_type=bids)
+
     def _select_handler(self) -> None:
         quote_num = float(self.order_volume.get())
         order_cost = quote_num * float(self.pool_data['quote_token_price_base'])
@@ -239,12 +275,11 @@ class DEX:
             self.make_order_btn.configure(state=btn_state)
 
 
-    def _make_order(self) -> None:
-        quote_num = float(self.order_volume.get())
+    def _make_order(self, quote_num, transaction_type) -> None:
         if quote_num > 0.0:
             order_cost = quote_num * float(self.pool_data['quote_token_price_base'])
 
-            if self.transaction_type.get() == 1:
+            if transaction_type == 1:
                 res = self.liq_taker.make_transaction(asset_name=self.pool_name.split('/')[-1].strip(), 
                                                         exchange_tocken=self.pool_name.split('/')[0].strip(),
                                                         amount=quote_num, 
@@ -252,7 +287,7 @@ class DEX:
                                                         transaction_cost=order_cost,
                                                         asset_price_usd=float(self.pool_data['quote_token_price_usd']),
                                                         base_price_usd=float(self.pool_data['base_token_price_usd']))
-            elif self.transaction_type.get() == -1:
+            elif transaction_type == -1:
                 res = self.liq_taker.make_transaction(asset_name=self.pool_name.split('/')[-1].strip(), 
                                                         exchange_tocken=self.pool_name.split('/')[0].strip(),
                                                         amount=quote_num, 
@@ -285,6 +320,7 @@ class DEX:
         self.draw()
 
     def _go_to_main_menu(self) -> None:
+        self.runable = False
         clear_window(self.window, 'grid')
         del self.liq_taker
         self.main_menu.draw_main()

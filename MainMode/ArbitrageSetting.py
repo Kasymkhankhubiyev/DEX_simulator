@@ -2,10 +2,12 @@ import tkinter as tk
 
 from tkinter import ttk
 from tkinter import messagebox
+import time
 
 # from .DEX_module import DEX
 from .GeckoAPI import get_pools
 from .Arbitrage_module import DEX
+from .ArbitrageDexBot import DEXBot
 
 from helper import clear_window
 
@@ -67,9 +69,6 @@ class ArbitrageSetting:
 
         ## -- ## -- ## Back and Start buttions ## -- ## -- ##
 
-        # start_exit_canvas = tk.Canvas(main_canvas, width=30)
-        # start_exit_canvas.grid(row=7, column=0, columnspan=2, pady=20, padx=10, sticky='we')
-
         self.back_btn = tk.Button(main_canvas, text='Back', font=Labels_font,
                                   command=self._back_to_main_menu, bg='red')
         self.back_btn.grid(row=len(_labels_values)+1, column=0, pady=7, padx=10)
@@ -77,6 +76,12 @@ class ArbitrageSetting:
         self.start_btn = tk.Button(main_canvas, text='Start', bg='green', font=Labels_font,
                                    command=self._run_modulation)
         self.start_btn.grid(row=len(_labels_values)+1, column=1, pady=7, padx=10)
+
+        self.bot_runable = tk.IntVar()
+        tk.Checkbutton(main_canvas, text='Auto', onvalue=1, offvalue=0, 
+                       variable=self.bot_runable).grid(row=len(_labels_values)+2, column=0, 
+                                                       padx=5, pady=5, columnspan=2)
+
 
     def _get_labels_values(self, pool_name: str) -> list:
         return [self.pools_data[pool_name]['base_token_price_usd'],
@@ -101,6 +106,16 @@ class ArbitrageSetting:
         pool_name = self.lp_type.get()
         data = self.pools_data[pool_name]
         clear_window(self.window, 'pack')
-        dex = DEX(main_menu=self.main_menu, window=self.window, 
-                  data=data, pool_name=pool_name)
-        dex.draw()
+        if self.bot_runable.get() == 0:
+            dex = DEX(main_menu=self.main_menu, window=self.window, 
+                    data=data, pool_name=pool_name)
+            dex.draw()
+
+        elif self.bot_runable.get() == 1:
+            dex = DEXBot(main_menu=self.main_menu, window=self.window, 
+                    data=data, pool_name=pool_name)
+            dex.draw()
+            counter = 1
+            while True:
+                time.sleep(7)
+                dex.run()

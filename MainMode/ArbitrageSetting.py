@@ -101,5 +101,6 @@ class ArbitrageSetting:
         pool_name = self.lp_type.get()
         data = self.pools_data[pool_name]
         clear_window(self.window, 'pack')
-        dex = DEX(window=self.window, data=data, pool_name=pool_name)
+        dex = DEX(main_menu=self.main_menu, window=self.window, 
+                  data=data, pool_name=pool_name)
         dex.draw()

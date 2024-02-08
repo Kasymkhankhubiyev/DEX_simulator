@@ -1,15 +1,19 @@
 import tkinter as tk
-
+from tkinter import ttk
+from tkinter import messagebox
 
 from .LTaker import LTaker
 from .Graph import UniswapCanvas
 from .pool_eval import get_assets_num
+from helper import clear_window
+
 
 label_font = ('TimesNewRoman', 20)
 title_label_font = ('TimesNewRoman', 30)
 
 class DEX:
-    def __init__(self, window: tk.Tk, data: dict, pool_name: str) -> None:
+    def __init__(self, main_menu, window: tk.Tk, data: dict, pool_name: str,
+                 wallet_data = None) -> None:
         """
         
             Arguments:
@@ -28,12 +32,15 @@ class DEX:
         
         """
         self.window = window
+        self.main_menu = main_menu
         self.canvas, self.pool_canvas = None, None
 
         self.pool_data = data
         self.pool_name = pool_name
 
-        self.liq_taker = LTaker({})
+        self.liq_taker = LTaker({self.pool_name.split("/")[-1].strip(): 10,
+                                 self.pool_name.split("/")[0].strip(): 5 * float(self.pool_data['quote_token_price_base'])
+                                })
         self.amm = None
 
 
@@ -110,7 +117,7 @@ class DEX:
                  font=label_font).grid(row=liq_taker_canvas_row_num, 
                                         column=0, sticky='w',
                                         padx=5, pady=5)
-        tk.Label(liq_taker_canvas, text='100',
+        tk.Label(liq_taker_canvas, text=f'{self.liq_taker.get_asset_num(self.pool_name.split("/")[0].strip()):.7f}',
                  font=label_font).grid(row=liq_taker_canvas_row_num, 
                                        column=1, padx=5, pady=5)
         liq_taker_canvas_row_num += 1
@@ -119,7 +126,7 @@ class DEX:
                  font=label_font).grid(row=liq_taker_canvas_row_num, 
                                         column=0, sticky= 'w',
                                         padx=5, pady=5)
-        tk.Label(liq_taker_canvas, text='100',
+        tk.Label(liq_taker_canvas, text=f'{self.liq_taker.get_asset_num(self.pool_name.split("/")[-1].strip()):.7f}',
                  font=label_font).grid(row=liq_taker_canvas_row_num, 
                                        column=1, padx=5, pady=5)
         
@@ -133,30 +140,58 @@ class DEX:
                                                                padx=5, pady=10)
         liq_taker_canvas_row_num += 1
 
-        tk.Label(liq_taker_canvas, text=f'{self.pool_name.split("/")[0].strip()}',
+        tk.Label(liq_taker_canvas, text=f'{self.pool_name.split("/")[-1].strip()}',
                  font=label_font).grid(row=liq_taker_canvas_row_num, column=0, padx=5, pady=5)
-        tk.Entry(liq_taker_canvas, 
-                 font=label_font, width=12, relief=tk.SUNKEN, 
-                 background='white', borderwidth=5).grid(row=liq_taker_canvas_row_num, 
-                                                                   column=1, padx=5, pady=5)
+        
+        # TODO: change to combobox with limits from wallet
+        # self.order_volume = tk.Entry(liq_taker_canvas, text='0.01',
+        #                             font=label_font, width=12, relief=tk.SUNKEN, 
+        #                             background='white', borderwidth=5)
+        self.order_volume = ttk.Spinbox(liq_taker_canvas, font=label_font, width=10, 
+                                            from_=0.01, to=1000, increment=0.01,
+                                            command=self._select_handler) # , format=".%2")
+        self.order_volume.set('0.0')
+        
+        self.order_volume.grid(row=liq_taker_canvas_row_num, column=1, padx=5, pady=5)
+
+        liq_taker_canvas_row_num += 1
+
+        tk.Label(liq_taker_canvas, text=f'Order Const in {self.pool_name.split("/")[0].strip()} :',
+                 font=label_font).grid(row=liq_taker_canvas_row_num, column=0, padx=5, pady=5)
+        
+        self.order_cost = tk.Label(liq_taker_canvas, text='0.0', font=label_font)
+        self.order_cost.grid(row=liq_taker_canvas_row_num, column=1, padx=5, pady=5)
         
         liq_taker_canvas_row_num += 1
 
-        transaction_type = tk.IntVar()
+        self.transaction_type = tk.IntVar()
+        self.transaction_type.set(1)
 
-        tk.Checkbutton(liq_taker_canvas, text='Sell', 
-                       onvalue=1, offvalue=0, font=label_font,
-                       variable=transaction_type,
-                       height=3, width=10).grid(row=liq_taker_canvas_row_num, column=0,
-                                                padx=5, pady=5)
-        tk.Checkbutton(liq_taker_canvas, text='Buy',
-                       onvalue=-1, offvalue=0,font= label_font,
-                       variable=transaction_type,
-                       height=3, width=10).grid(row=liq_taker_canvas_row_num, column=1,
-                                                padx=5, pady=5)
+        self.sell_btn = tk.Checkbutton(liq_taker_canvas, text='Sell',
+                                        onvalue=1, offvalue=0, font=label_font,
+                                        variable=self.transaction_type,
+                                        command=self._select_handler,
+                                        height=3, width=10)
+
+        self.sell_btn.grid(row=liq_taker_canvas_row_num, column=0, padx=5, pady=5)
+        
+        self.buy_btn = tk.Checkbutton(liq_taker_canvas, text='Buy',
+                                        onvalue=-1, offvalue=0,font= label_font,
+                                        variable=self.transaction_type,
+                                        command=self._select_handler,
+                                        height=3, width=10)
+        self.buy_btn.grid(row=liq_taker_canvas_row_num, column=1, padx=5, pady=5)
+        
+        liq_taker_canvas_row_num += 1
+
+        self.make_order_btn = tk.Button(liq_taker_canvas, text='Make Order', 
+                                        command=self._make_order, font=label_font)
+        self.make_order_btn.grid(row=liq_taker_canvas_row_num, column=0, padx=5, pady=5)
+        
         liq_taker_canvas_row_num += 1
 
         ## -- ## -- ## -- ## -- ##
+
         amm_data = {'assetX': self.pool_name.split('/')[0].strip(),
                     'assetY': self.pool_name.split('/')[-1].strip(),
                     'assetX_volume': M,
@@ -167,6 +202,51 @@ class DEX:
         amm_graph = UniswapCanvas(amm_canvas, amm_data)
         amm_graph.draw({})
 
+    def _select_handler(self) -> None:
+        quote_num = float(self.order_volume.get())
+        order_cost = quote_num * float(self.pool_data['quote_token_price_base'])
+
+        if self.transaction_type.get() == 1:
+            color = 'green' if quote_num <= self.liq_taker.get_asset_num(self.pool_name.split('/')[-1].strip()) else 'red'
+            btn_state = 'normal' if quote_num <= self.liq_taker.get_asset_num(self.pool_name.split('/')[-1].strip()) else 'disabled'
+            self.order_cost.configure(text=f'{order_cost:.7f}', fg=color)
+            self.make_order_btn.configure(state=btn_state)
+                
+        elif self.transaction_type.get() == -1:
+            color = 'green' if order_cost <= self.liq_taker.get_asset_num(self.pool_name.split('/')[0].strip()) else 'red'
+            btn_state = 'normal' if order_cost <= self.liq_taker.get_asset_num(self.pool_name.split('/')[0].strip()) else 'disabled'
+            self.order_cost.configure(text=f'{order_cost:.7f}', fg=color)
+            self.make_order_btn.configure(state=btn_state)
+
+
+    def _make_order(self) -> None:
+        quote_num = float(self.order_volume.get())
+        order_cost = quote_num * float(self.pool_data['quote_token_price_base'])
+
+        if self.transaction_type.get() == 1:
+            res = self.liq_taker.make_transaction(asset_name=self.pool_name.split('/')[-1].strip(), 
+                                                    exchange_tocken=self.pool_name.split('/')[0].strip(),
+                                                    amount=quote_num, 
+                                                    transaction_type=1,
+                                                    transaction_cost=order_cost)
+        elif self.transaction_type.get() == -1:
+            res = self.liq_taker.make_transaction(asset_name=self.pool_name.split('/')[-1].strip(), 
+                                                    exchange_tocken=self.pool_name.split('/')[0].strip(),
+                                                    amount=quote_num, 
+                                                    transaction_type=-1,
+                                                    transaction_cost=order_cost)
+            
+        if res:
+            self._refresh_page()
+        if not res:
+            messagebox.showerror(title='Transaction Fault', message='not enough money to execute the transaction')
+
+
+    def _refresh_page(self) -> None:
+        clear_window(self.window, 'grid')
+        self.draw()
 
     def _go_to_main_menu(self) -> None:
-        pass
+        clear_window(self.window, 'grid')
+        del self.liq_taker
+        self.main_menu.draw_main()

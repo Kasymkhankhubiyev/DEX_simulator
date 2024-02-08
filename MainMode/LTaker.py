@@ -1,7 +1,7 @@
 class LTaker:
     def __init__(self, wallet_data) -> None:
-        self.wallet = {} # must be assets
-        self.history = None
+        self.wallet = wallet_data # must be assets
+        self.history = []
         self.pnl = None
 
     def send_order(self) -> None:
@@ -14,25 +14,26 @@ class LTaker:
         pass
 
     def get_asset_num(self, asset_name: str) -> float:
-        return self.wallet()
+        return self.wallet[asset_name]
 
-    def transaction(self, asset_name, exchange_tocken, amount, 
+    def make_transaction(self, asset_name, exchange_tocken, amount, 
                     transaction_type, transaction_cost) -> bool:
         """
         """
-        if transaction_type == -1:
+        if transaction_type == 1:
             asset_amount = self.wallet[asset_name]
             if asset_amount >= amount:
                 self.wallet[asset_name] = asset_amount - amount
-                self.wallet[exchange_tocken] = amount * transaction_cost
+                self.wallet[exchange_tocken] += transaction_cost
                 return True
             else:
                 return False
-        elif transaction_type == 1:
+        elif transaction_type == -1:
             cash_available = self.wallet[exchange_tocken]
-            if cash_available >= amount * transaction_cost:
+            if cash_available >= transaction_cost:
                 self.wallet[asset_name] += amount
-                self.wallet[exchange_tocken] -= amount * transaction_cost
+                self.wallet[exchange_tocken] -= transaction_cost
+                return True
             else:
                 return False
             

@@ -33,10 +33,12 @@ class DEX:
         self.window = window
         self.canvas, self.pool_canvas = None, None
         self.data = data
+        print('created')
 
 
     def draw_main(self) -> None:
         
+        # print('start')
         upper_line = tk.Canvas(self.window, relief=tk.RIDGE)
         upper_line.grid(row=0, column=0, columnspan=3, padx=10, pady=15)
         tk.Label(upper_line, text=f'DEX -- {self.data["lp_assetX"]}/{self.data["lp_assetY"]}', 
@@ -47,7 +49,7 @@ class DEX:
                  relief=tk.SUNKEN, font=label_font).grid(row=0,column=1, 
                                                          padx=5, rowspan=2,
                                                          sticky='w')
-        
+        # print('start')
         tk.Label(upper_line, text=f'{self.data["lp_assetX"]} amount -- {self.data["lp_assetX_volume"]:.5f}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=0,column=2, 
                                                          padx=5, pady=3,
@@ -56,7 +58,7 @@ class DEX:
                  relief=tk.SUNKEN, font=label_font).grid(row=1,column=2, 
                                                          padx=5, pady=3,
                                                          sticky='w')
-        
+        # print('start')
         tk.Label(upper_line, 
                  text=f'{self.data["lp_assetX"]} pool price: {self.data["lp_assetX_volume"]*self.data["lp_assetY_volume"] / self.data["lp_assetX_volume"]:.5f}', 
                  relief=tk.SUNKEN, font=label_font,
@@ -65,7 +67,7 @@ class DEX:
                                         sticky='w')
         
         coint_cost = get_coin_cost(self.data["lp_assetX"])
-
+        # print('start')
         tk.Label(upper_line, text=f'{self.data["lp_assetX"]} stock price: {coint_cost:.5f}', 
                  relief=tk.SUNKEN, font=label_font).grid(row=1, column=3, 
                                                          padx=5, pady=3,
@@ -80,12 +82,13 @@ class DEX:
                  relief=tk.SUNKEN, font=label_font).grid(row=1, column=4, 
                                                          padx=5, pady=3,
                                                          sticky='w')
-
+        # print('start')
         amm_canvas = tk.Canvas(self.window)
         amm_canvas.grid(row=1, column=0)
         amm_data = {'assetX': self.data["lp_assetX"],
                     'assetY': self.data["lp_assetY"],
-                    'assetX_volume': self.data["lp_assetX_volume"],
-                    'assetY_volume': self.data["lp_assetY_volume"]}
+                    'assetX_volume': float(self.data["lp_assetX_volume"]),
+                    'assetY_volume': float(self.data["lp_assetY_volume"])}
         amm_graph = UniswapCanvas(amm_canvas, amm_data)
-        amm_graph.draw({})
+        # print('start')
+        amm_graph.draw()
